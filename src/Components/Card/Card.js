@@ -9,8 +9,8 @@ const Card = (props) => {
         <CardArticle className="card ">
           <img
             src={
-              props.article?.urlToImage != null
-                ? props.article?.urlToImage
+              props.article?.image_url != null
+                ? props.article?.image_url
                 : image
             }
             className="card-img-top"
@@ -24,7 +24,7 @@ const Card = (props) => {
               className="btn btn-primary btn-show text-capitalize"
               role="button"
               data-bs-toggle="modal"
-              data-bs-target={`#article${String(props.article.index)}`}
+              data-bs-target={`#article${props.article?.article_id}`}
             >
               details
             </ButtonShow>
