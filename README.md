@@ -26,7 +26,6 @@ Through this application, you can read a group of articles and also search for d
 
 Salman asaad
 
-[salman-a-asaad](https://salman-a-asaad.github.io/salman-a-asaad/)
 
 ## Version History
 
