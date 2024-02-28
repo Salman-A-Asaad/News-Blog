@@ -2,69 +2,31 @@ import React, { useRef, useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { mainColor, mainColorHover } from "../../Styles/index";
 import { BsSearch } from "react-icons/bs";
-import { Card, ModalCard } from "../../Components/index";
-import { BsChevronCompactRight, BsChevronCompactLeft } from "react-icons/bs";
+import { Card, ModalCard, Spinner } from "../../Components/index";
 const Search = () => {
-  const [totalResults, setTotalResults] = useState(0);
   const searchRef = useRef();
   const buttonSearchRef = useRef();
   const [searchResult, setSearchResult] = useState({
     query: "",
     articles: null,
-    searchPage: 1,
+    loading: false,
   });
-  const changePage = (page) => {
-    let searchTitle = searchResult.query;
-    let currentPage = searchResult.searchPage + page;
-    if (searchTitle !== "") {
-      setSearchResult({ ...searchResult, articles: [] });
-      fetch(
-        process.env.REACT_APP_API_URL_SEARCH +
-          searchTitle +
-          `&page=
-${currentPage}` +
-          process.env.REACT_APP_API_KEY,
-        {
-          method: "GET",
-          protocol: "http2",
-        }
-      )
-        .then((res) => {
-          return res.json();
-        })
-        .then((data) => {
-          setSearchResult({
-            ...searchResult,
-            articles: data.articles,
-            searchPage: currentPage,
-          });
-        });
-    }
-  };
   const handleSearch = () => {
     let searchTitle = searchRef.current.value;
     if (searchTitle !== "") {
-      setSearchResult({ ...searchResult, articles: [] });
-      fetch(
-        process.env.REACT_APP_API_URL_SEARCH +
-          searchTitle +
-          `&page=
-${searchResult.searchPage}` +
-          process.env.REACT_APP_API_KEY,
-        {
-          method: "GET",
-          protocol: "http2",
-        }
-      )
+      setSearchResult({ ...searchResult, articles: [], loading: true });
+      fetch(process.env.REACT_APP_API_URL_SEARCH + searchTitle, {
+        method: "GET",
+        protocol: "http2",
+      })
         .then((res) => {
           return res.json();
         })
         .then((data) => {
-          setTotalResults(data.totalResults);
           setSearchResult({
             query: searchTitle,
-            articles: data.articles,
-            searchPage: 1,
+            articles: data.results,
+            loading: false,
           });
           searchRef.current.value = "";
         });
@@ -73,16 +35,6 @@ ${searchResult.searchPage}` +
   const handleMostPopular = (e) => {
     searchRef.current.value = e.target.innerHTML;
     handleSearch();
-  };
-  const handleBefor = () => {
-    if (searchResult.searchPage > 1) {
-      changePage(-1);
-    }
-  };
-  const handleNext = () => {
-    if (searchResult.searchPage < totalResults) {
-      changePage(1);
-    }
   };
   const mostPopular = ["messi", "usa", "uae", "bitcoin"];
   return (
@@ -112,6 +64,17 @@ ${searchResult.searchPage}` +
         })}
       </div>
       <SearchResults className="row">
+        {searchResult.articles === null ? (
+          <div
+            style={{ width: "100%", color: mainColor }}
+            className=" text-capitalize d-flex align-items-center justify-content-center fw-bold pt-3"
+          >
+            search to show articles
+          </div>
+        ) : (
+          ""
+        )}
+        {searchResult.loading ? <Spinner /> : ""}
         {searchResult.articles?.map((ele, index) => {
           ele.index = index;
           return <Card key={index} article={ele} />;
@@ -121,46 +84,11 @@ ${searchResult.searchPage}` +
           return <ModalCard key={index} article={ele} />;
         })}
       </SearchResults>
-      {searchResult.articles != null ? (
-        <div className=" mt-5 d-flex align-items-center justify-content-center">
-          <Arrow onClick={handleBefor}>
-            <BsChevronCompactLeft />
-          </Arrow>
-          <NumberPage>{searchResult.searchPage}</NumberPage>
-          <Arrow onClick={handleNext}>
-            <BsChevronCompactRight />
-          </Arrow>
-        </div>
-      ) : (
-        ""
-      )}
     </Container>
   );
 };
 const Container = styled.div`
   min-height: 40vh;
-`;
-const Arrow = styled.span`
-  cursor: pointer;
-  color: ${mainColor};
-  border: 1px solid ${mainColor};
-  padding: 5px;
-  margin: 0 15px;
-  background-color: white;
-  font-weight: bold;
-  font-size: 20px;
-  text-align: center;
-  transition: all 0.5s;
-  &:hover {
-    border-color: white;
-    color: white;
-    background-color: ${mainColor};
-  }
-`;
-const NumberPage = styled.span`
-  color: ${mainColorHover};
-  font-size: 20px;
-  font-weight: bold;
 `;
 const Input = styled.input`
   border: none;
