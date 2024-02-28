@@ -20,7 +20,7 @@ Through this application, you can read a group of articles and also search for d
 #### Note
 
 - You must put your specifies the enviroment var in .env file .
-- In demo maybe you cant see the articles from newsapi.org because the apikey .
+- If the features related to logging in, creating articles and reading articles written by members (features related to firebase), run Psiphon or similar. 
 
 ## Authors
 
